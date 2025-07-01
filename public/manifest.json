@@ -1,0 +1,134 @@
+{
+  "name": "SymptomAI - Medical Symptom Checker",
+  "short_name": "SymptomAI",
+  "description": "AI-powered medical symptom checker for better healthcare decisions",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "categories": ["health", "medical", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png", 
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128", 
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "SymptomAI Desktop Interface"
+    },
+    {
+      "src": "/screenshots/mobile-1.png", 
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "SymptomAI Mobile Interface"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Symptom Check",
+      "short_name": "Quick Check",
+      "description": "Start a quick symptom analysis",
+      "url": "/?action=quick-check",
+      "icons": [
+        {
+          "src": "/icons/shortcut-quick.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Health Dashboard",
+      "short_name": "Dashboard", 
+      "description": "View your health dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icons/shortcut-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Emergency Assessment",
+      "short_name": "Emergency",
+      "description": "Quick emergency symptom assessment", 
+      "url": "/emergency",
+      "icons": [
+        {
+          "src": "/icons/shortcut-emergency.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share-symptoms",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+symptom",
+      "url": "/symptom?q=%s"
+    }
+  ]
+}

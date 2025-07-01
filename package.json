@@ -1,0 +1,73 @@
+{
+  "name": "medai-advanced",
+  "version": "2.0.0",
+  "description": "Professional AI-powered medical symptom analysis platform with multi-model biomedical intelligence",
+  "keywords": [
+    "medical",
+    "healthcare",
+    "ai",
+    "symptom-analysis",
+    "biomedical",
+    "clinical",
+    "machine-learning",
+    "healthcare-technology"
+  ],
+  "homepage": "https://github.com/faizanshoukat5/ai-symptom-analyzer#readme",
+  "bugs": {
+    "url": "https://github.com/faizanshoukat5/ai-symptom-analyzer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faizanshoukat5/ai-symptom-analyzer.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "MedAI Advanced Team",
+    "email": "contact@medai-advanced.com",
+    "url": "https://medai-advanced.com"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "test": "echo \"Add tests here\" && exit 0",
+    "test:integration": "python test_frontend_integration.py",
+    "health-check": "python health_check.py",
+    "start:backend": "cd backend && python main_advanced_models.py",
+    "start:full": "concurrently \"npm run start:backend\" \"npm run dev\"",
+    "build:production": "npm run lint && npm run build",
+    "clean": "rm -rf dist node_modules/.cache",
+    "setup": "npm install && cd backend && pip install -r requirements_advanced.txt"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^2.8.0",
+    "axios": "^1.6.0",
+    "date-fns": "^2.30.0",
+    "react-router-dom": "^6.8.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^7.0.0"
+  }
+}
