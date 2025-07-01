@@ -9,6 +9,8 @@
 
 > **Advanced AI-powered medical symptom analysis platform combining multiple biomedical models with professional clinical assessment capabilities.**
 
+**AI Symptom Analyzer** revolutionizes health symptom understanding through intelligent multi-model AI analysis. Simply describe your symptoms in natural language and receive instant, comprehensive medical insights including severity assessment, clinical recommendations, urgency scoring, and professional guidance. Built with cutting-edge technology and designed for both healthcare professionals and informed health decisions.
+
 ## 🚀 **Live Demo**
 **🌐 [Try AI Symptom Analyzer Live](https://ai-symptom-analyzer.web.app)**
 

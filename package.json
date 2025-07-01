@@ -1,7 +1,7 @@
 {
   "name": "medai-advanced",
   "version": "2.0.0",
-  "description": "Professional AI-powered medical symptom analysis platform with multi-model biomedical intelligence",
+  "description": "Advanced AI-powered medical symptom analyzer combining multiple biomedical models (BioGPT, ClinicalBERT, NER) for intelligent health assessment. Features real-time symptom analysis, urgency scoring, clinical recommendations, and professional medical-grade UI. Built with React, FastAPI, and deployed on Firebase.",
   "keywords": [
     "medical",
     "healthcare",
