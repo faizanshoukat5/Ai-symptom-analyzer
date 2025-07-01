@@ -41,8 +41,8 @@
 
 ### 1️⃣ Clone & Install
 ```bash
-git clone https://github.com/faizanshoukat5/ai-symptom-analyzer.git
-cd ai-symptom-analyzer
+git clone https://github.com/faizanshoukat5/Ai-symptom-analyzer.git
+cd Ai-symptom-analyzer
 
 # Install frontend dependencies
 npm install
@@ -213,31 +213,12 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Hugging Face** for transformer models and datasets
-- **OpenAI** for GPT integration capabilities
-- **FastAPI** for excellent API framework
-- **React & TypeScript** for modern frontend development
-- **Tailwind CSS** for beautiful styling system
-
-## 📞 Support & Contact
-
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/medai-advanced/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/medai-advanced/discussions)
-- 📧 **Email**: support@medai-advanced.com
-- 📖 **Documentation**: [Full Documentation](docs/README.md)
-
 ---
 
 <div align="center">
 
 **🏥 Built with ❤️ for advancing AI in healthcare**
 
-[Demo](https://medai-advanced-demo.vercel.app) • [Documentation](docs/) • [API Docs](http://localhost:8000/docs) • [Contributing](CONTRIBUTING.md)
+[GitHub Repository](https://github.com/faizanshoukat5/Ai-symptom-analyzer) • [API Docs](http://localhost:8000/docs) • [Contributing](CONTRIBUTING.md)
 
 </div>

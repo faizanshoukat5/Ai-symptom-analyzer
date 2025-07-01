@@ -12,13 +12,13 @@
     "machine-learning",
     "healthcare-technology"
   ],
-  "homepage": "https://github.com/faizanshoukat5/ai-symptom-analyzer#readme",
+  "homepage": "https://github.com/faizanshoukat5/Ai-symptom-analyzer#readme",
   "bugs": {
-    "url": "https://github.com/faizanshoukat5/ai-symptom-analyzer/issues"
+    "url": "https://github.com/faizanshoukat5/Ai-symptom-analyzer/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/faizanshoukat5/ai-symptom-analyzer.git"
+    "url": "git+https://github.com/faizanshoukat5/Ai-symptom-analyzer.git"
   },
   "license": "MIT",
   "author": {
