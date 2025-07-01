@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import SymptomForm from './components/SymptomForm'
 import Spinner from './components/Spinner'
-import AIResultCard from './components/AIResultCard'
+import AIResultCard from './components/AIResultCard_Original'
 import './App.css'
 
 interface AIResult {

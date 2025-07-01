@@ -9,6 +9,11 @@
 
 > **Advanced AI-powered medical symptom analysis platform combining multiple biomedical models with professional clinical assessment capabilities.**
 
+## 🚀 **Live Demo**
+**🌐 [Try AI Symptom Analyzer Live](https://ai-symptom-analyzer.web.app)**
+
+*Experience the full-featured medical AI platform deployed on Firebase with real-time symptom analysis.*
+
 ## ✨ Features
 
 ### 🧠 **Multi-Model AI System**
@@ -194,6 +199,33 @@ GET /health
 - **📊 Multi-Model Validation**: Combines different AI approaches for reliability
 - **🏥 Professional Interface**: Medical-grade UI suitable for healthcare settings
 
+## 🚀 Deployment
+
+### **Live Production App**
+The application is deployed and ready to use at:
+**🌐 [https://ai-symptom-analyzer.web.app](https://ai-symptom-analyzer.web.app)**
+
+### **Deployment Options**
+- **Firebase** (Hosting + Functions) - *Currently deployed*
+- **Vercel + Railway** - Frontend and Backend separation
+- **Netlify + Heroku** - Alternative hosting solution
+- **Docker** - Containerized deployment
+
+### **Quick Deploy Commands**
+```bash
+# Deploy to Firebase
+npm run build
+firebase deploy --only hosting
+
+# Or use our deployment script
+npm run firebase:deploy:hosting
+```
+
+For detailed deployment instructions, see:
+- 📋 [Firebase Deployment Guide](FIREBASE_README.md)
+- 🚀 [Quick Deploy Guide](QUICK_FIREBASE_DEPLOY.md)
+- 📖 [Complete Deployment Options](LIVE_DEPLOYMENT_GUIDE.md)
+
 ## ⚠️ Medical Disclaimer
 
 **This tool is for informational purposes only and should NEVER replace professional medical advice.**
@@ -219,6 +251,6 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 **🏥 Built with ❤️ for advancing AI in healthcare**
 
-[GitHub Repository](https://github.com/faizanshoukat5/Ai-symptom-analyzer) • [API Docs](http://localhost:8000/docs) • [Contributing](CONTRIBUTING.md)
+[🌐 Live Demo](https://ai-symptom-analyzer.web.app) • [GitHub Repository](https://github.com/faizanshoukat5/Ai-symptom-analyzer) • [API Docs](http://localhost:8000/docs) • [Contributing](CONTRIBUTING.md)
 
 </div>

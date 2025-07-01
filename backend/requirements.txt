@@ -25,3 +25,8 @@ seaborn==0.13.0
 protobuf==4.25.1
 sentence-transformers==2.2.2
 sacremoses==0.0.53
+functions-framework==3.*
+firebase-admin==6.2.0
+google-cloud-firestore==2.11.1
+firebase-functions==0.1.0
+mangum==0.17.0

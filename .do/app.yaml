@@ -1,0 +1,43 @@
+name: medical-symptom-checker
+services:
+- name: backend
+  source_dir: /backend
+  github:
+    repo: your-username/your-repo-name
+    branch: main
+  run_command: uvicorn main:app --host 0.0.0.0 --port $PORT
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  envs:
+  - key: OPENAI_API_KEY
+    value: YOUR_OPENAI_API_KEY
+    type: SECRET
+  - key: DATABASE_URL
+    value: YOUR_DATABASE_URL
+    type: SECRET
+  - key: CORS_ORIGINS
+    value: https://your-app-name.ondigitalocean.app
+  http_port: 8080
+  routes:
+  - path: /api
+- name: frontend
+  source_dir: /
+  github:
+    repo: your-username/your-repo-name
+    branch: main
+  build_command: npm run build
+  run_command: npm run preview
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  envs:
+  - key: VITE_API_URL
+    value: https://your-app-name.ondigitalocean.app/api
+  http_port: 3000
+  routes:
+  - path: /
+databases:
+- name: postgres-db
+  engine: PG
+  version: "13"
