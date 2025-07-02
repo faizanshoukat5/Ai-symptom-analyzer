@@ -11,38 +11,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
-  
-  /* Light mode colors */
-  --color-primary: 14 165 233;
-  --color-primary-foreground: 255 255 255;
-  --color-background: 248 250 252;
-  --color-foreground: 15 23 42;
-  --color-muted: 241 245 249;
-  --color-muted-foreground: 100 116 139;
-  --color-border: 226 232 240;
-  --color-input: 255 255 255;
-  --color-ring: 14 165 233;
-}
-
-.dark {
-  /* Dark mode colors */
-  --color-primary: 56 189 248;
-  --color-primary-foreground: 2 6 23;
-  --color-background: 2 6 23;
-  --color-foreground: 248 250 252;
-  --color-muted: 15 23 42;
-  --color-muted-foreground: 148 163 184;
-  --color-border: 30 41 59;
-  --color-input: 15 23 42;
-  --color-ring: 56 189 248;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: rgb(var(--color-background));
-  color: rgb(var(--color-foreground));
-  transition: background-color 0.5s ease, color 0.3s ease;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 /* Modern scrollbar */
@@ -51,28 +25,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(241 245 249);
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: rgb(15 23 42);
+  background: #f1f5f9;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgb(59 130 246), rgb(99 102 241));
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgb(37 99 235), rgb(79 70 229));
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgb(56 189 248), rgb(139 92 246));
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgb(14 165 233), rgb(124 58 237));
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
 }
 
 /* Custom gradient text */
@@ -85,14 +48,6 @@ body {
   animation: gradientShift 3s ease infinite;
 }
 
-.dark .gradient-text {
-  background: linear-gradient(135deg, #f8fafc, #38bdf8, #a855f7);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -103,12 +58,6 @@ body {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .glass {
-  background: rgba(15, 23, 42, 0.3);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
 }
 
 /* Modern button hover effects */
@@ -129,10 +78,6 @@ body {
   transition: left 0.5s;
 }
 
-.dark .btn-modern::before {
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.2), transparent);
-}
-
 .btn-modern:hover::before {
   left: 100%;
 }
@@ -149,41 +94,19 @@ body {
 
 /* Pulse glow effect */
 @keyframes pulseGlow {
-  0%, 100% { 
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-  }
-  50% { 
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
-  }
-}
-
-@keyframes pulseGlowDark {
-  0%, 100% { 
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-  }
-  50% { 
-    box-shadow: 0 0 40px rgba(56, 189, 248, 0.7);
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
 }
 
 .pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
-.dark .pulse-glow {
-  animation: pulseGlowDark 2s ease-in-out infinite;
-}
-
 /* Modern focus styles */
 .focus-modern:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-  border-color: rgb(59 130 246);
-}
-
-.dark .focus-modern:focus {
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
-  border-color: rgb(56 189 248);
+  border-color: #3b82f6;
 }
 
 /* Enhanced shadows */
@@ -194,13 +117,6 @@ body {
     0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
-.dark .shadow-modern {
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.3),
-    0 2px 4px -1px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(148, 163, 184, 0.1);
-}
-
 .shadow-modern-lg {
   box-shadow: 
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
@@ -208,25 +124,11 @@ body {
     0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
-.dark .shadow-modern-lg {
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.4),
-    0 10px 10px -5px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(148, 163, 184, 0.1);
-}
-
 /* Custom grid patterns */
 .grid-pattern {
   background-image: 
     linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-.dark .grid-pattern {
-  background-image: 
-    linear-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.08) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -249,174 +151,13 @@ input:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.dark input:focus, .dark textarea:focus {
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-}
-
-/* Enhanced selection styles */
-::selection {
-  background: rgba(59, 130, 246, 0.2);
-  color: rgb(15 23 42);
-}
-
-.dark ::selection {
-  background: rgba(56, 189, 248, 0.3);
-  color: rgb(248 250 252);
-}
-
-/* Improved loading states */
-.loading-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.2) 20%,
-    rgba(255, 255, 255, 0.5) 60%,
-    rgba(255, 255, 255, 0)
-  );
-  animation: shimmer 2s infinite;
-}
-
-.dark .loading-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(56, 189, 248, 0) 0%,
-    rgba(56, 189, 248, 0.1) 20%,
-    rgba(56, 189, 248, 0.3) 60%,
-    rgba(56, 189, 248, 0)
-  );
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* Enhanced card hover effects */
-.card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.dark .card-hover:hover {
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(148, 163, 184, 0.2);
-}
-
-/* Medical-themed animations */
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  14% { transform: scale(1.1); }
-  28% { transform: scale(1); }
-  42% { transform: scale(1.1); }
-  70% { transform: scale(1); }
-}
-
-.heartbeat {
-  animation: heartbeat 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-medical {
-  0%, 100% { 
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% { 
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-.pulse-medical {
-  animation: pulse-medical 2s ease-in-out infinite;
-}
-
-/* Enhanced typography with dark mode */
-.text-medical-primary {
-  color: rgb(14 165 233);
-}
-
-.dark .text-medical-primary {
-  color: rgb(56 189 248);
-}
-
-/* Improved accessibility */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
 /* Print styles for better printing */
 @media print {
   body {
     background: white !important;
-    color: black !important;
   }
   
   .no-print {
     display: none !important;
   }
-  
-  .dark {
-    color-scheme: light;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .glass {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgb(0, 0, 0);
-  }
-  
-  .dark .glass {
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid rgb(255, 255, 255);
-  }
-}
-
-/* Enhanced mobile responsiveness */
-@media (max-width: 640px) {
-  .mobile-optimized {
-    padding: 1rem;
-    font-size: 0.875rem;
-  }
-  
-  .mobile-scroll {
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* Better focus indicators for keyboard navigation */
-@media (any-hover: none) {
-  .hover\\:shadow-glow:hover {
-    box-shadow: none;
-  }
-}
-
-/* Enhanced backdrop effects */
-.backdrop-medical {
-  backdrop-filter: blur(16px) saturate(180%);
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.dark .backdrop-medical {
-  backdrop-filter: blur(16px) saturate(180%);
-  background: rgba(15, 23, 42, 0.8);
 }
