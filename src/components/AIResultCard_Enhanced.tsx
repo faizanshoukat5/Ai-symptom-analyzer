@@ -140,7 +140,7 @@ const AIResultCard: React.FC<AIResultCardProps> = ({ result }) => {
                   <div className="text-sm text-gray-600">
                     {model.success ? (
                       <>
-                        Confidence: {(model.confidence * 100).toFixed(1)}% | 
+                        Confidence: {(model.confidence).toFixed(1)}% | 
                         Time: {model.processing_time}s |
                         Urgency: {model.urgency_score}/10
                       </>
@@ -208,7 +208,7 @@ const AIResultCard: React.FC<AIResultCardProps> = ({ result }) => {
               </div>
               <div>
                 <span className="font-medium text-gray-700">Ensemble Confidence:</span>
-                <span className="ml-2 text-gray-600">{(result.ensemble_confidence * 100).toFixed(1)}%</span>
+                <span className="ml-2 text-gray-600">{(result.ensemble_confidence).toFixed(1)}%</span>
               </div>
               <div>
                 <span className="font-medium text-gray-700">Timestamp:</span>

@@ -30,13 +30,3 @@ firebase-admin==6.2.0
 google-cloud-firestore==2.11.1
 firebase-functions==0.1.0
 mangum==0.17.0
-anthropic
-cohere
-groq
-huggingface_hub
-accelerate
-bitsandbytes
-requests
-beautifulsoup4
-gunicorn
-a2wsgi

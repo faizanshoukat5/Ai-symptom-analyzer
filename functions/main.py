@@ -7,12 +7,10 @@ import os
 from dotenv import load_dotenv
 import json
 import logging
-from firebase_functions import https_fn
-from firebase_admin import initialize_app
-from a2wsgi import ASGIMiddleware
 
-# Initialize Firebase Admin SDK
-initialize_app()
+# Add Hugging Face imports
+from transformers import pipeline
+import torch
 
 # Load environment variables
 load_dotenv()
@@ -426,11 +424,6 @@ async def debug_hf_analysis(symptom_data: SymptomRequest):
         }
     except Exception as e:
         return {"error": str(e)}
-
-@https_fn.on_request()
-def api(request):
-    return ASGIMiddleware(app)(request)
-
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, FileText, Sparkles, AlertCircle, CheckCircle, Clock, User, Calendar, Activity } from "lucide-react";
+import { Mic, FileText, Sparkles, AlertCircle, CheckCircle, Clock, User, Activity } from "lucide-react";
 import VoiceSymptomInput from "./VoiceSymptomInput";
 
 interface SymptomFormProps {
@@ -73,7 +73,6 @@ const SymptomForm: React.FC<SymptomFormProps> = ({ onSubmit, loading }) => {
   const [error, setError] = useState("");
   const [showTemplates, setShowTemplates] = useState(false);
   const [showVoiceInput, setShowVoiceInput] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<SymptomTemplate | null>(null);
   const [isValid, setIsValid] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [showTips, setShowTips] = useState(false);
@@ -139,7 +138,6 @@ const SymptomForm: React.FC<SymptomFormProps> = ({ onSubmit, loading }) => {
 
   const handleTemplateSelect = (template: SymptomTemplate) => {
     setInput(template.template);
-    setSelectedTemplate(template);
     setShowTemplates(false);
     textareaRef.current?.focus();
   };

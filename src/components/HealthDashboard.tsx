@@ -145,7 +145,7 @@ const HealthDashboard: React.FC = () => {
                 <p className="text-sm font-medium text-gray-600">Health Score</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {healthMetrics.length > 0 
-                    ? Math.round((healthMetrics.reduce((acc, metric) => acc + metric.confidence, 0) / healthMetrics.length) * 100)
+                    ? Math.round((healthMetrics.reduce((acc, metric) => acc + metric.confidence, 0) / healthMetrics.length))
                     : '0'
                   }%
                 </p>

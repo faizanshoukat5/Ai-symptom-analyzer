@@ -22,26 +22,16 @@ interface AIResult {
 
 // Advanced API response interface  
 interface AdvancedAPIResponse {
-  primary_analysis: string;
+  condition: string;
   severity: string;
   confidence: number;
   advice: string;
   recommendations: string[];
   whenToSeekHelp: string;
   disclaimer: string;
-  model_analyses: any[];
-  entities_extracted: string[];
-  risk_factors: string[];
-  differential_diagnoses: string[];
-  urgency_score: number;
-  ai_models_used: string;
-  processing_summary: {
-    total_processing_time: number;
-    models_used: number;
-    entities_found: number;
-    urgency_score: number;
-    analysis_timestamp: string;
-  };
+  entities_extracted?: string[];
+  urgency_score?: number;
+  ai_models_used?: string;
 }
 
 function AppContent() {
@@ -73,7 +63,7 @@ function AppContent() {
       
       // Transform advanced API response to match our simple interface
       const transformedResult: AIResult = {
-        condition: apiResult.primary_analysis || "Unknown condition",
+        condition: apiResult.condition || "Symptom Analysis",
         severity: apiResult.severity as "Low" | "Medium" | "High" | "Critical" || "Medium",
         advice: apiResult.advice,
         confidence: apiResult.confidence,

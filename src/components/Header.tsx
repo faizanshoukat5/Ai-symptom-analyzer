@@ -11,7 +11,6 @@ import {
   Info, 
   Shield,
   Github,
-  ExternalLink,
   Sparkles
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
@@ -278,7 +277,7 @@ const Header: React.FC = () => {
               
               {/* Mobile stats */}
               <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-clinical-700">
-                {stats.map((stat, index) => (
+                {stats.map((stat) => (
                   <div key={stat.label} className="text-center">
                     <div className={`text-lg font-bold ${stat.color} dark:opacity-90`}>
                       {stat.value}

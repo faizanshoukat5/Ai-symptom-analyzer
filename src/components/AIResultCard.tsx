@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   AlertTriangle, 
   Shield, 
-  Clock, 
   Activity, 
   Brain, 
-  Heart, 
-  Eye, 
-  EyeOff, 
   Download, 
   Share2, 
   ChevronDown, 
@@ -22,10 +18,9 @@ import {
   Info,
   Lightbulb,
   Stethoscope,
-  BookOpen,
   Calendar
 } from "lucide-react";
-import { Doughnut, Bar, Line } from "react-chartjs-2";
+import { Doughnut, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -76,7 +71,6 @@ const AIResultCard: React.FC<AIResultCardProps> = ({
   urgencyScore = 5
 }) => {
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
-  const [showModelBreakdown, setShowModelBreakdown] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'analysis' | 'recommendations' | 'timeline'>('overview');
 
   // Enhanced severity mapping
@@ -130,7 +124,7 @@ const AIResultCard: React.FC<AIResultCardProps> = ({
     labels: ['Confidence', 'Uncertainty'],
     datasets: [
       {
-        data: [confidence * 100, (1 - confidence) * 100],
+        data: [confidence, 100 - confidence],
         backgroundColor: ['#0ea5e9', '#e2e8f0'],
         borderColor: ['#0284c7', '#cbd5e1'],
         borderWidth: 2,
@@ -215,7 +209,7 @@ const AIResultCard: React.FC<AIResultCardProps> = ({
           {/* Quick stats */}
           <div className="flex items-center space-x-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{Math.round(confidence * 100)}%</div>
+              <div className="text-2xl font-bold text-gray-900">{Math.round(confidence)}%</div>
               <div className="text-xs text-gray-500">Confidence</div>
             </div>
             <div className="text-center">
@@ -297,7 +291,7 @@ const AIResultCard: React.FC<AIResultCardProps> = ({
                     <Doughnut data={confidenceData} options={chartOptions} />
                   </div>
                   <div className="mt-4 text-center">
-                    <div className="text-2xl font-bold text-medical-600">{Math.round(confidence * 100)}%</div>
+                    <div className="text-2xl font-bold text-medical-600">{Math.round(confidence)}%</div>
                     <div className="text-sm text-gray-500">Overall Confidence</div>
                   </div>
                 </div>
@@ -372,13 +366,13 @@ const AIResultCard: React.FC<AIResultCardProps> = ({
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Confidence</span>
-                        <span className="font-semibold text-gray-900">{Math.round(model.confidence * 100)}%</span>
+                        <span className="font-semibold text-gray-900">{Math.round(model.confidence)}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <motion.div
                           className="bg-gradient-to-r from-medical-400 to-medical-600 h-2 rounded-full"
                           initial={{ width: 0 }}
-                          animate={{ width: `${model.confidence * 100}%` }}
+                          animate={{ width: `${model.confidence}%` }}
                           transition={{ duration: 1, delay: index * 0.2 }}
                         />
                       </div>
