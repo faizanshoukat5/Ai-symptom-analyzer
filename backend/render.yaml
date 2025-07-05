@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: medical-symptom-checker-api
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main_simplified:app --host=0.0.0.0 --port=$PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: http://localhost:3000,http://localhost:5173,https://ai-symptom-analyzer.web.app
+      - key: DATABASE_URL
+        value: sqlite:///./medical_ai.db
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false

@@ -4,8 +4,8 @@ import { Heart, Stethoscope, Brain, Shield, Sparkles, Activity, AlertCircle, Che
 import { ThemeProvider } from './components/ThemeProvider'
 import ModernSymptomForm from './components/ModernSymptomForm'
 import ModernAIResultCard from './components/ModernAIResultCard'
+import ModernHeader from './components/ModernHeader'
 import ModernSpinner from './components/ModernSpinner'
-import jsPDF from 'jspdf'
 import './styles/modern.css'
 
 interface AIResult {
@@ -42,12 +42,7 @@ function AppContent() {
     setResult(null)
 
     try {
-      // Use environment-aware API URL
-      const apiUrl = import.meta.env.PROD 
-        ? 'https://your-backend-url.com/analyze-symptoms'  // We'll update this after backend deployment
-        : 'http://localhost:8000/analyze-symptoms'
-        
-      const response = await fetch(apiUrl, {
+      const response = await fetch('http://localhost:8000/analyze-symptoms', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -89,183 +84,15 @@ function AppContent() {
     }
   }
 
-  const generatePDFReport = async () => {
-    if (!result) return
-
-    const pdf = new jsPDF()
-    const pageWidth = pdf.internal.pageSize.getWidth()
-    const pageHeight = pdf.internal.pageSize.getHeight()
-    const margin = 20
-    let currentY = margin
-
-    // Header
-    pdf.setFillColor(59, 130, 246) // Blue color
-    pdf.rect(0, 0, pageWidth, 30, 'F')
-    
-    pdf.setTextColor(255, 255, 255)
-    pdf.setFontSize(20)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('MedAI Medical Report', margin, 20)
-    
-    currentY = 50
-
-    // Report date
-    pdf.setTextColor(0, 0, 0)
-    pdf.setFontSize(10)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(`Generated on: ${new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })}`, margin, currentY)
-    currentY += 20
-
-    // Condition
-    pdf.setFontSize(14)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Condition:', margin, currentY)
-    currentY += 8
-    pdf.setFont('helvetica', 'normal')
-    pdf.setFontSize(12)
-    const conditionLines = pdf.splitTextToSize(result.condition, pageWidth - 2 * margin)
-    pdf.text(conditionLines, margin, currentY)
-    currentY += conditionLines.length * 6 + 10
-
-    // Severity
-    pdf.setFontSize(14)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Severity:', margin, currentY)
-    currentY += 8
-    pdf.setFont('helvetica', 'normal')
-    pdf.setFontSize(12)
-    
-    // Color-code severity
-    if (result.severity === 'High' || result.severity === 'Critical') {
-      pdf.setTextColor(220, 38, 38) // Red
-    } else if (result.severity === 'Medium') {
-      pdf.setTextColor(245, 158, 11) // Orange
-    } else {
-      pdf.setTextColor(34, 197, 94) // Green
-    }
-    
-    pdf.text(result.severity, margin, currentY)
-    pdf.setTextColor(0, 0, 0) // Reset to black
-    currentY += 15
-
-    // Urgency Score
-    if (result.urgencyScore !== undefined) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Urgency Score:', margin, currentY)
-      currentY += 8
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(12)
-      pdf.text(`${result.urgencyScore}/10`, margin, currentY)
-      currentY += 15
-    }
-
-    // Confidence
-    if (result.confidence !== undefined) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Confidence:', margin, currentY)
-      currentY += 8
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(12)
-      pdf.text(`${result.confidence}%`, margin, currentY)
-      currentY += 15
-    }
-
-    // Advice
-    pdf.setFontSize(14)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Medical Advice:', margin, currentY)
-    currentY += 8
-    pdf.setFont('helvetica', 'normal')
-    pdf.setFontSize(12)
-    const adviceLines = pdf.splitTextToSize(result.advice, pageWidth - 2 * margin)
-    pdf.text(adviceLines, margin, currentY)
-    currentY += adviceLines.length * 6 + 10
-
-    // Recommendations
-    if (result.recommendations && result.recommendations.length > 0) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Recommendations:', margin, currentY)
-      currentY += 8
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(12)
-      
-      result.recommendations.forEach((rec, index) => {
-        const recLines = pdf.splitTextToSize(`${index + 1}. ${rec}`, pageWidth - 2 * margin)
-        pdf.text(recLines, margin, currentY)
-        currentY += recLines.length * 6 + 3
-      })
-      currentY += 5
-    }
-
-    // When to seek help
-    if (result.whenToSeekHelp) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('When to Seek Help:', margin, currentY)
-      currentY += 8
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(12)
-      const helpLines = pdf.splitTextToSize(result.whenToSeekHelp, pageWidth - 2 * margin)
-      pdf.text(helpLines, margin, currentY)
-      currentY += helpLines.length * 6 + 10
-    }
-
-    // AI Models Used
-    if (result.aiModelsUsed) {
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('AI Models Used:', margin, currentY)
-      currentY += 8
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(12)
-      pdf.text(result.aiModelsUsed, margin, currentY)
-      currentY += 15
-    }
-
-    // Disclaimer
-    if (currentY > pageHeight - 60) {
-      pdf.addPage()
-      currentY = margin
-    }
-    
-    pdf.setFillColor(239, 246, 255) // Light blue background
-    pdf.rect(margin - 10, currentY - 5, pageWidth - 2 * margin + 20, 30, 'F')
-    
-    pdf.setFontSize(12)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Important Disclaimer:', margin, currentY + 5)
-    currentY += 12
-    pdf.setFont('helvetica', 'normal')
-    pdf.setFontSize(10)
-    const disclaimerText = 'This AI analysis is for informational purposes only. Always consult healthcare professionals for medical advice. This report should not replace professional medical consultation.'
-    const disclaimerLines = pdf.splitTextToSize(disclaimerText, pageWidth - 2 * margin)
-    pdf.text(disclaimerLines, margin, currentY)
-
-    // Footer
-    pdf.setFontSize(8)
-    pdf.setTextColor(128, 128, 128)
-    pdf.text('© 2025 MedAI Advanced. All rights reserved.', margin, pageHeight - 10)
-
-    // Save PDF
-    const fileName = `MedAI_Report_${new Date().toISOString().split('T')[0]}.pdf`
-    pdf.save(fileName)
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Background Pattern */}
       <div className="fixed inset-0 opacity-30" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
       }} />
+      
+      {/* Header */}
+      <ModernHeader />
       
       {/* Hero Section */}
       <section className="relative px-4 sm:px-6 lg:px-8 pt-20 pb-16">
@@ -276,23 +103,13 @@ function AppContent() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <div className="flex justify-center items-center mb-8">
+            <div className="flex justify-center items-center mb-6">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-lg opacity-20"></div>
                 <div className="relative bg-white dark:bg-gray-800 p-4 rounded-full shadow-lg">
                   <Stethoscope className="w-12 h-12 text-blue-600" />
                 </div>
               </div>
-            </div>
-            
-            {/* Brand Title */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                MedAI
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Advanced Medical Analysis Platform
-              </p>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
@@ -404,7 +221,7 @@ function AppContent() {
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <ModernAIResultCard result={result} onDownloadPDF={generatePDFReport} />
+                      <ModernAIResultCard result={result} />
                     </motion.div>
                   )}
                   
@@ -442,7 +259,7 @@ function AppContent() {
               <strong>Medical Disclaimer:</strong> This AI analysis is for informational purposes only. 
               Always consult healthcare professionals for medical advice.
             </p>
-            <p>© 2025 MedAI Advanced. All rights reserved.</p>
+            <p>© 2024 MedAI Advanced. All rights reserved.</p>
           </div>
         </div>
       </footer>

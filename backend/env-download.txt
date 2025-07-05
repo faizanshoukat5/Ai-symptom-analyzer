@@ -1,0 +1,9 @@
+# Medical Symptom Checker - Backend Environment Variables
+# Replace 'sk-your-openai-key-here' with your actual OpenAI API key
+
+OPENAI_API_KEY=sk-your-openai-key-here
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173,https://ai-symptom-analyzer.web.app,https://ai-symptom-analyzer-production.up.railway.app
+DATABASE_URL=sqlite:///./medical_ai.db
+PORT=8000
+ENVIRONMENT=production
+DEBUG=false

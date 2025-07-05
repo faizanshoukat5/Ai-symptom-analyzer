@@ -6,7 +6,14 @@ Integrates multiple state-of-the-art AI models for comprehensive medical analysi
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Optional, List, Ddef get_cached_model_info() -> Dict[str, bool]:
+from typing import Optional, List, Dict
+import asyncio
+import json
+import logging
+from datetime import datetime
+import traceback
+
+def get_cached_model_info() -> Dict[str, bool]:
     """Get information about which models are cached"""
     models_to_check = {
         "d4data/biomedical-ner-all": "biomedical_ner",
@@ -17,7 +24,8 @@ from typing import Optional, List, Ddef get_cached_model_info() -> Dict[str, boo
         "facebook/bart-large-mnli": "zero_shot_classifier",
         "cardiffnlp/twitter-roberta-base-sentiment-latest": "sentiment_analyzer",
         "sentence-transformers/all-MiniLM-L6-v2": "text_embedder"
-    }port asyncio
+    }
+import asyncio
 import threading
 import time
 import os

@@ -11,10 +11,20 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true
+    host: true,
+    allowedHosts: [
+      'localhost',
+      '.replit.dev',
+      'c4376731-ec98-4ae7-afde-6c575838ccc4-00-1gyobh8et8us4.sisko.replit.dev'
+    ]
   },
   preview: {
     port: 3000,
-    host: true
+    host: true,
+    allowedHosts: [
+      'localhost',
+      '.replit.dev',
+      'c4376731-ec98-4ae7-afde-6c575838ccc4-00-1gyobh8et8us4.sisko.replit.dev'
+    ]
   }
 })

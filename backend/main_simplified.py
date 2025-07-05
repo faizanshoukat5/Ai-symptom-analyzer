@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 import json
 import logging
 import importlib.util
+import requests
+import asyncio
+import aiohttp
 
 # Load environment variables
 load_dotenv()
@@ -28,12 +31,20 @@ app = FastAPI(
 )
 
 # Configure CORS
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,https://ai-symptom-analyzer.web.app").split(",")
+# Add Railway URL and common development ports
+cors_origins.extend([
+    "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", 
+    "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004",
+    "http://127.0.0.1:5173", "http://127.0.0.1:5174", "http://127.0.0.1:5175", 
+    "http://127.0.0.1:3000", "http://127.0.0.1:3001", "http://127.0.0.1:3002", "http://127.0.0.1:3003", "http://127.0.0.1:3004",
+    "https://ai-symptom-analyzer-production.up.railway.app",
+    "https://ai-symptom-analyzer.web.app"
+])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000", 
-                  "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004",
-                  "http://127.0.0.1:5173", "http://127.0.0.1:5174", "http://127.0.0.1:5175", 
-                  "http://127.0.0.1:3000", "http://127.0.0.1:3001", "http://127.0.0.1:3002", "http://127.0.0.1:3003", "http://127.0.0.1:3004"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,13 +59,21 @@ except Exception as e:
     logger.warning(f"OpenAI not available: {e}")
     OPENAI_AVAILABLE = False
 
+# Hugging Face API Configuration
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/d4data/biomedical-ner-all"
+HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN", "your_huggingface_token_here")
+HUGGINGFACE_HEADERS = {
+    "Authorization": f"Bearer {HUGGINGFACE_TOKEN}",
+    "Content-Type": "application/json"
+}
+
 # Initialize AI Models (load in background to avoid blocking)
-BIOMEDICAL_NER_AVAILABLE = False
+BIOMEDICAL_NER_AVAILABLE = True  # Always available via API
 MEDICAL_BERT_AVAILABLE = False
 SYMPTOM_CLASSIFIER_AVAILABLE = False
+MODEL_LOADING_STARTED = False
 
 # Model containers
-biomedical_ner = None
 medical_bert = None
 symptom_classifier = None
 
@@ -131,17 +150,35 @@ SYMPTOM_CONDITIONS_DB = {
 }
 
 def load_biomedical_model():
-    """Load biomedical NER model in background"""
-    global BIOMEDICAL_NER_AVAILABLE, biomedical_ner
+    """Biomedical NER is now available via Hugging Face API"""
+    global BIOMEDICAL_NER_AVAILABLE
+    logger.info("Biomedical NER model available via Hugging Face API")
+    BIOMEDICAL_NER_AVAILABLE = True
+    logger.info("✅ Biomedical NER API configured successfully")
+
+async def call_huggingface_ner_api(text: str) -> List[Dict]:
+    """Call Hugging Face biomedical NER API"""
     try:
-        from transformers import pipeline
-        logger.info("Loading biomedical NER model...")
-        biomedical_ner = pipeline("token-classification", model="d4data/biomedical-ner-all")
-        BIOMEDICAL_NER_AVAILABLE = True
-        logger.info("✅ Biomedical NER model loaded successfully")
+        payload = {"inputs": text}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                HUGGINGFACE_API_URL,
+                headers=HUGGINGFACE_HEADERS,
+                json=payload,
+                timeout=aiohttp.ClientTimeout(total=30)
+            ) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    logger.info(f"✅ Hugging Face NER API call successful, found {len(result)} entities")
+                    return result
+                else:
+                    error_text = await response.text()
+                    logger.error(f"Hugging Face API error: {response.status} - {error_text}")
+                    return []
     except Exception as e:
-        logger.warning(f"⚠️ Biomedical NER model failed to load: {e}")
-        BIOMEDICAL_NER_AVAILABLE = False
+        logger.error(f"Error calling Hugging Face NER API: {e}")
+        return []
 
 def load_medical_bert_model():
     """Load Medical classification model in background"""
@@ -149,8 +186,12 @@ def load_medical_bert_model():
     try:
         from transformers import pipeline
         logger.info("Loading lightweight medical classification model...")
-        # Using a smaller, more reliable model for zero-shot classification
-        medical_bert = pipeline("zero-shot-classification", model="microsoft/DialoGPT-medium")
+        # Use a simpler, more reliable model with CPU
+        medical_bert = pipeline(
+            "zero-shot-classification", 
+            model="facebook/bart-large-mnli",
+            device=-1  # Use CPU to avoid memory issues
+        )
         MEDICAL_BERT_AVAILABLE = True
         logger.info("✅ Medical classification model loaded successfully")
     except Exception as e:
@@ -158,7 +199,11 @@ def load_medical_bert_model():
         # Try an even simpler approach
         try:
             logger.info("Trying alternative classification approach...")
-            medical_bert = pipeline("text-classification", model="distilbert-base-uncased-finetuned-sst-2-english")
+            medical_bert = pipeline(
+                "text-classification", 
+                model="distilbert-base-uncased-finetuned-sst-2-english",
+                device=-1  # Use CPU
+            )
             MEDICAL_BERT_AVAILABLE = True
             logger.info("✅ Alternative classification model loaded successfully")
         except Exception as e2:
@@ -172,7 +217,11 @@ def load_symptom_classifier():
         from transformers import pipeline
         logger.info("Loading symptom severity classifier...")
         # Using a lighter model that's more suitable for text classification
-        symptom_classifier = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
+        symptom_classifier = pipeline(
+            "text-classification", 
+            model="cardiffnlp/twitter-roberta-base-sentiment-latest",
+            device=-1  # Use CPU
+        )
         SYMPTOM_CLASSIFIER_AVAILABLE = True
         logger.info("✅ Symptom severity classifier loaded successfully")
     except Exception as e:
@@ -181,30 +230,64 @@ def load_symptom_classifier():
 
 # Load models in background sequentially to avoid memory issues
 import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+import concurrent.futures
+
+def run_with_timeout(func, args=(), kwargs=None, timeout_seconds=10):
+    """Run a function with timeout using ThreadPoolExecutor"""
+    if kwargs is None:
+        kwargs = {}
+    
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(func, *args, **kwargs)
+        try:
+            result = future.result(timeout=timeout_seconds)
+            return result
+        except concurrent.futures.TimeoutError:
+            logger.warning(f"Function {func.__name__} timed out after {timeout_seconds} seconds")
+            raise TimeoutError(f"Operation timed out after {timeout_seconds} seconds")
 
 def load_models_sequentially():
     """Load models one by one to avoid memory pressure"""
+    global MODEL_LOADING_STARTED
+    
+    # Prevent multiple loading attempts
+    if MODEL_LOADING_STARTED:
+        return
+    
+    MODEL_LOADING_STARTED = True
     logger.info("🚀 Starting sequential model loading...")
     
-    # Load biomedical NER first (most important)
-    load_biomedical_model()
+    # Try to load biomedical NER first (most important)
+    try:
+        logger.info("Loading biomedical NER model...")
+        load_biomedical_model()
+        import time
+        time.sleep(5)  # Wait longer between models to allow memory cleanup
+    except Exception as e:
+        logger.error(f"Failed to load biomedical model: {e}")
     
-    # Wait a bit between loads
-    import time
-    time.sleep(2)
+    # Only load additional models if we have enough memory
+    if BIOMEDICAL_NER_AVAILABLE:
+        logger.info("Biomedical NER loaded successfully, attempting to load classification model...")
+        try:
+            load_medical_bert_model()
+            time.sleep(5)  # Wait between models
+        except Exception as e:
+            logger.error(f"Failed to load medical BERT model: {e}")
+    else:
+        logger.warning("Skipping additional models due to biomedical NER failure")
     
-    # Load classification model second
-    load_medical_bert_model()
-    
-    # Wait a bit more
-    time.sleep(2)
-    
-    # Load severity classifier last
-    load_symptom_classifier()
+    # Skip symptom classifier for now to save memory
+    logger.info("Skipping symptom classifier to preserve memory")
     
     logger.info("🎉 Model loading process completed")
+    logger.info(f"Model status: Biomedical NER: {BIOMEDICAL_NER_AVAILABLE} (API), Medical BERT: {MEDICAL_BERT_AVAILABLE}, Symptom Classifier: {SYMPTOM_CLASSIFIER_AVAILABLE}")
 
-threading.Thread(target=load_models_sequentially, daemon=True).start()
+# Start model loading in background thread (only once)
+if not MODEL_LOADING_STARTED:
+    threading.Thread(target=load_models_sequentially, daemon=True).start()
 
 # Pydantic models
 class SymptomRequest(BaseModel):
@@ -246,7 +329,7 @@ async def health_check():
         "medical_bert_available": MEDICAL_BERT_AVAILABLE,
         "symptom_classifier_available": SYMPTOM_CLASSIFIER_AVAILABLE,
         "ai_models": {
-            "biomedical_ner": "Available" if BIOMEDICAL_NER_AVAILABLE else "Loading...",
+            "biomedical_ner": "Available via API" if BIOMEDICAL_NER_AVAILABLE else "Not Available",
             "medical_bert": "Available" if MEDICAL_BERT_AVAILABLE else "Loading...",
             "symptom_classifier": "Available" if SYMPTOM_CLASSIFIER_AVAILABLE else "Loading...",
             "openai": "Configured" if OPENAI_AVAILABLE else "Not Configured"
@@ -264,9 +347,9 @@ async def analyze_symptoms(symptom_data: SymptomRequest):
         # Step 1: Extract medical entities with biomedical NER
         entities_extracted = []
         medical_terms_found = []
-        if BIOMEDICAL_NER_AVAILABLE and biomedical_ner:
+        if BIOMEDICAL_NER_AVAILABLE:
             try:
-                entities_result = extract_medical_entities(symptom_data.symptoms)
+                entities_result = await extract_medical_entities(symptom_data.symptoms)
                 entities_extracted = entities_result.get("entities", [])
                 logger.info(f"✅ Extracted {len(entities_extracted)} medical entities")
             except Exception as e:
@@ -346,9 +429,9 @@ async def analyze_symptoms(symptom_data: SymptomRequest):
                 logger.warning(f"Ensemble analysis creation failed: {e}")
         
         # Step 7: If OpenAI and ensemble both failed, use biomedical NER alone if available
-        if BIOMEDICAL_NER_AVAILABLE and biomedical_ner:
+        if BIOMEDICAL_NER_AVAILABLE:
             try:
-                analysis = analyze_with_biomedical_ner(symptom_data)
+                analysis = await analyze_with_biomedical_ner(symptom_data)
                 logger.info("✅ Analysis completed using Biomedical NER only")
                 return analysis
             except Exception as e:
@@ -362,18 +445,18 @@ async def analyze_symptoms(symptom_data: SymptomRequest):
         logger.error(f"Analysis error: {str(e)}")
         return get_basic_fallback_analysis(symptom_data)
 
-def analyze_with_biomedical_ner(symptom_data: SymptomRequest) -> AnalysisResponse:
-    """Analyze symptoms using biomedical NER"""
+async def analyze_with_biomedical_ner(symptom_data: SymptomRequest) -> AnalysisResponse:
+    """Analyze symptoms using biomedical NER API"""
     try:
-        # Extract medical entities
-        entities = biomedical_ner(symptom_data.symptoms)
+        # Extract medical entities using API
+        entities_result = await call_huggingface_ner_api(symptom_data.symptoms)
         
         # Process entities
         symptoms = []
         body_parts = []
         severity_indicators = []
         
-        for entity in entities:
+        for entity in entities_result:
             word = entity.get('word', '')
             label = entity.get('entity', '')
             
@@ -524,7 +607,8 @@ Respond with JSON only in this exact format:
     "recommendations": ["specific recommendation 1", "specific recommendation 2", "specific recommendation 3", "specific recommendation 4"],
     "whenToSeekHelp": "When to seek immediate medical help",
     "possibleCauses": ["cause 1", "cause 2", "cause 3"],
-    "possibleTreatments": ["treatment 1", "treatment 2", "treatment 3"]
+    "possibleTreatments": ["treatment 1", "treatment 2", "treatment 3"],
+    "urgency_score": <integer between 1-10 representing urgency (1=very low, 10=emergency)>
 }
 """
     return prompt
@@ -550,7 +634,8 @@ Respond with JSON only in this exact format:
     "advice": "Detailed primary medical advice (at least 2 sentences)",
     "confidence": <integer between 60-95>,
     "recommendations": ["specific recommendation 1", "specific recommendation 2", "specific recommendation 3"],
-    "whenToSeekHelp": "When to seek immediate medical help"
+    "whenToSeekHelp": "When to seek immediate medical help",
+    "urgency_score": <integer between 1-10 representing urgency (1=very low, 10=emergency)>
 }
 """
     return prompt
@@ -578,6 +663,23 @@ def parse_openai_response(content: str) -> AnalysisResponse:
         else:
             confidence = 75
         
+        # Calculate urgency score from severity and other factors
+        urgency_score = data.get("urgency_score")
+        if urgency_score is None:
+            # Calculate urgency score based on severity if not provided
+            severity_level = data.get("severity", "Medium")
+            if severity_level == "Critical":
+                urgency_score = 9
+            elif severity_level == "High":
+                urgency_score = 7
+            elif severity_level == "Medium":
+                urgency_score = 5
+            else:  # Low
+                urgency_score = 3
+        
+        # Ensure urgency score is within bounds
+        urgency_score = max(1, min(10, int(urgency_score)))
+        
         return AnalysisResponse(
             condition=data.get("condition", "Symptom analysis"),
             severity=data.get("severity", "Medium"),
@@ -585,7 +687,8 @@ def parse_openai_response(content: str) -> AnalysisResponse:
             confidence=confidence,
             recommendations=data.get("recommendations", ["Consult healthcare provider"]),
             whenToSeekHelp=data.get("whenToSeekHelp", "Seek medical attention if symptoms worsen."),
-            disclaimer="This AI analysis is for informational purposes only. Always consult healthcare professionals."
+            disclaimer="This AI analysis is for informational purposes only. Always consult healthcare professionals.",
+            urgency_score=urgency_score
         )
         
     except Exception as e:
@@ -744,51 +847,52 @@ def get_basic_fallback_analysis(symptom_data) -> AnalysisResponse:
         disclaimer="AI models are loading. For immediate medical concerns, consult healthcare professionals."
     )
 
-def extract_medical_entities(symptoms_text: str) -> Dict[str, List[str]]:
-    """Extract medical entities from symptoms using biomedical NER with fallback"""
+async def extract_medical_entities(symptoms_text: str) -> Dict[str, List[str]]:
+    """Extract medical entities from symptoms using Hugging Face biomedical NER API"""
     try:
-        if BIOMEDICAL_NER_AVAILABLE and biomedical_ner:
+        if BIOMEDICAL_NER_AVAILABLE:
             try:
-                # Use the biomedical NER pipeline
-                entities_result = biomedical_ner(symptoms_text)
+                # Call Hugging Face API
+                entities_result = await call_huggingface_ner_api(symptoms_text)
                 
-                # Process and clean entities
-                entities = []
-                current_entity = ""
-                
-                for item in entities_result:
-                    word = item.get('word', '')
-                    label = item.get('entity', '')
-                    score = item.get('score', 0)
+                if entities_result:
+                    # Process and clean entities
+                    entities = []
+                    current_entity = ""
                     
-                    # Skip low confidence results
-                    if score < 0.5:
-                        continue
+                    for item in entities_result:
+                        word = item.get('word', '')
+                        label = item.get('entity', '')
+                        score = float(item.get('score', 0))
                         
-                    # Handle subword tokens (those starting with ##)
-                    if word.startswith('##'):
-                        current_entity += word[2:]  # Remove ## and append
-                    else:
-                        # If we have a current entity, save it
-                        if current_entity and len(current_entity) > 2:
-                            entities.append(current_entity.lower())
-                        current_entity = word
-                
-                # Don't forget the last entity
-                if current_entity and len(current_entity) > 2:
-                    entities.append(current_entity.lower())
-                
-                # Remove duplicates and filter out very short or common words
-                filtered_entities = []
-                for entity in set(entities):
-                    if len(entity) > 2 and entity not in ['the', 'and', 'but', 'for', 'with', 'have', 'had', 'has']:
-                        filtered_entities.append(entity)
-                
-                if filtered_entities:
-                    return {"entities": filtered_entities[:10]}  # Limit to top 10 entities
+                        # Skip low confidence results
+                        if score < 0.5:
+                            continue
+                            
+                        # Handle subword tokens (those starting with ##)
+                        if word.startswith('##'):
+                            current_entity += word[2:]  # Remove ## and append
+                        else:
+                            # If we have a current entity, save it
+                            if current_entity and len(current_entity) > 2:
+                                entities.append(current_entity.lower())
+                            current_entity = word
+                    
+                    # Don't forget the last entity
+                    if current_entity and len(current_entity) > 2:
+                        entities.append(current_entity.lower())
+                    
+                    # Remove duplicates and filter out very short or common words
+                    filtered_entities = []
+                    for entity in set(entities):
+                        if len(entity) > 2 and entity not in ['the', 'and', 'but', 'for', 'with', 'have', 'had', 'has']:
+                            filtered_entities.append(entity)
+                    
+                    if filtered_entities:
+                        return {"entities": filtered_entities[:10]}  # Limit to top 10 entities
                 
             except Exception as e:
-                logger.warning(f"Biomedical NER failed: {e}, using rule-based extraction")
+                logger.warning(f"Hugging Face NER API failed: {e}, using rule-based extraction")
         
         # Fallback to rule-based entity extraction
         return extract_entities_rule_based(symptoms_text)
@@ -873,8 +977,11 @@ def classify_symptoms(symptoms_text: str) -> List[str]:
         ]
         
         try:
-            # Try zero-shot classification first
-            result = medical_bert(symptoms_text, medical_categories)
+            # Add timeout to prevent hanging
+            def run_classification():
+                return medical_bert(symptoms_text, medical_categories)
+            
+            result = run_with_timeout(run_classification, timeout_seconds=15)
             
             # Return top 3 categories with confidence > 0.1
             classified_symptoms = []
@@ -886,8 +993,8 @@ def classify_symptoms(symptoms_text: str) -> List[str]:
             
             return classified_symptoms
             
-        except Exception as e:
-            logger.warning(f"Zero-shot classification failed: {e}, using rule-based fallback")
+        except (TimeoutError, Exception) as e:
+            logger.warning(f"Zero-shot classification failed or timed out: {e}, using rule-based fallback")
             return classify_symptoms_rule_based(symptoms_text)
         
     except Exception as e:
@@ -1105,4 +1212,18 @@ def create_ensemble_analysis(
         # Fallback to mock analysis if ensemble fails
         return get_mock_analysis(type('SymptomData', (), {'symptoms': symptoms, 'age': age, 'gender': gender})())
 
-# ...existing code...
+if __name__ == "__main__":
+    import uvicorn
+    
+    # Start model loading in background
+    logger.info("🚀 Starting sequential model loading...")
+    load_models_sequentially()
+    
+    # Start the server
+    logger.info("🚀 Starting FastAPI server...")
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_level="info"
+    )
