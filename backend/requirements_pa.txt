@@ -1,0 +1,22 @@
+# PythonAnywhere Optimized Requirements
+# Core FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-dotenv==1.0.0
+pydantic==2.5.0
+python-multipart==0.0.6
+httpx==0.25.2
+requests==2.31.0
+
+# Essential for your app
+openai==1.3.7
+
+# Remove heavy ML dependencies for PythonAnywhere
+# torch==2.1.0  # Too large for free tier
+# transformers==4.36.0  # Too large for free tier
+# spacy==3.7.2  # Too large for free tier
+# scikit-learn==1.3.2  # Optional - remove if space is an issue
+
+# Keep lightweight dependencies
+pandas==2.1.4
+numpy==1.24.4

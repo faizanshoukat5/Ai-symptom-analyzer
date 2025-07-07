@@ -293,6 +293,9 @@ function AppContent() {
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Advanced Medical Analysis Platform
               </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                By Faizan
+              </p>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
@@ -442,7 +445,13 @@ function AppContent() {
               <strong>Medical Disclaimer:</strong> This AI analysis is for informational purposes only. 
               Always consult healthcare professionals for medical advice.
             </p>
-            <p>© 2025 MedAI Advanced. All rights reserved.</p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-2">
+              <p>© 2025 MedAI Advanced. All rights reserved.</p>
+              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                <span className="text-gray-400">•</span>
+                <span className="font-medium">Developed by Faizan</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
